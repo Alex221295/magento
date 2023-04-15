@@ -1,0 +1,71 @@
+version: '3.7'
+services:
+  nginx-proxy:
+    container_name: magento-project.local-prod
+    image: 'nginx:latest'
+    restart: always
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.magento-project-local-http.rule=Host(`magento-project.local`)
+      - traefik.http.routers.magento-project-local-http.entrypoints=http
+      - traefik.http.routers.magento-project-local-http.service=magento-project-local-http
+      - traefik.http.services.magento-project-local-http.loadbalancer.server.port=80
+      - traefik.http.services.magento-project-local-http.loadbalancer.server.scheme=http
+      - traefik.http.routers.magento-project-local-https.rule=Host(`magento-project.local`)
+      - traefik.http.routers.magento-project-local-https.entrypoints=https
+      - traefik.http.routers.magento-project-local-https.tls=true
+      - traefik.http.routers.magento-project-local-https.service=magento-project-local-https
+      - traefik.http.services.magento-project-local-https.loadbalancer.server.port=443
+      - traefik.http.services.magento-project-local-https.loadbalancer.server.scheme=https
+    volumes:
+      - '${SSL_CERTIFICATES_DIR}:/certs'
+      - './nginx_proxy_for_varnish/virtual-host.conf:/etc/nginx/conf.d/default.conf:ro'
+  varnish-cache:
+    image: 'varnish:6.5.1-1'
+    restart: always
+    volumes:
+      - './varnish/varnish_magento.vcl:/etc/varnish/default.vcl:ro'
+  php:
+    container_name: magento-project.local-apache-prod
+    image: 'defaultvalue/php:7.4-production'
+    user: 'docker:docker'
+    sysctls:
+      - net.ipv4.ip_unprivileged_port_start=0
+    restart: always
+    extra_hosts:
+      - 'magento-project.local:127.0.0.1'
+    environment:
+      - COMPOSER_VERSION=1
+    volumes:
+      - '../../:/var/www/html'
+      - './apache/virtual-host-unsecure.conf:/etc/apache2/sites-enabled/000-default.conf:ro'
+  mysql:
+    image: 'bitnami/mariadb:10.4'
+    restart: always
+    environment:
+      - MARIADB_ROOT_USER=root
+      - MARIADB_ROOT_PASSWORD=root
+    volumes:
+      - 'mariadb_prod_data:/bitnami/mariadb'
+      - './mysql/my.cnf:/etc/my.cnf:ro'
+  elasticsearch:
+    image: 'elasticsearch:7.10.1'
+    environment:
+      - network.host=0.0.0.0
+      - http.host=0.0.0.0
+      - transport.host=127.0.0.1
+      - xpack.security.enabled=false
+      - indices.query.bool.max_clause_count=10240
+      - 'ES_JAVA_OPTS=-Xms1024m -Xmx1024m'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    restart: always
+    volumes:
+      - 'elasticsearch_prod_data:/usr/share/elasticsearch/data:rw'
+volumes:
+  mariadb_prod_data:
+    external: false
+  elasticsearch_prod_data:
+    external: false
