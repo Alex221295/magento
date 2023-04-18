@@ -11,6 +11,7 @@ class Baz extends \Magento\Framework\App\Action\Action implements HttpGetActionI
 {
     /**
      * @inheriDoc
+     * https://magento-project.local/some-pretty-url/foo_bar/baz/string_parameter/same%20string/integer_value/12
      */
 
     public function execute()
@@ -18,9 +19,7 @@ class Baz extends \Magento\Framework\App\Action\Action implements HttpGetActionI
 
         /** @var \Magento\Framework\App\Request\Http $request */
         $request = $this->getRequest();
-        /**
-         * https://magento-project.local/some-pretty-url/foo_bar/baz/stringParameter/same%20string/integerValue/12
-         */
+
         /** @var Json $response */
 //        $str = $this->getRequest()->getParam('string_parameter');
 //        var_dump($str);
