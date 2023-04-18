@@ -13,12 +13,13 @@ class Baz extends \Magento\Framework\App\Action\Action implements HttpGetActionI
      * @inheriDoc
      * https://magento-project.local/some-pretty-url/foo_bar/baz/string_parameter/same%20string/integer_value/12
      */
-
+//alex_ye_catalog_foo_bar_baz
     public function execute()
     {
 
         /** @var \Magento\Framework\App\Request\Http $request */
         $request = $this->getRequest();
+
 
         /** @var Json $response */
 //        $str = $this->getRequest()->getParam('string_parameter');

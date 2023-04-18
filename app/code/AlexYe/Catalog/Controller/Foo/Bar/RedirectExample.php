@@ -2,7 +2,9 @@
 
 namespace AlexYe\Catalog\Controller\Foo\Bar;
 
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\Controller\Result\RedirectFactory;
 use \Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\Result\Redirect;
 
@@ -19,6 +21,7 @@ class RedirectExample extends \Magento\Framework\App\Action\Action implements Ht
         /** @var Redirect $response */
 
         $response = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+        $response->setHttpResponseCode(301);
         $response->setPath(
             'alex_ye_catalog/foo_bar/baz',
             [
