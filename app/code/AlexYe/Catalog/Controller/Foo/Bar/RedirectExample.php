@@ -29,7 +29,7 @@ class RedirectExample extends \Magento\Framework\App\Action\Action implements Ht
                 'string_parameter'=> 'Redirect from another controller',
                 'integer_value'=> 301,
             ]
-
+//
         );
         return $response;
 
