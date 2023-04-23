@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
 
     <body>
         <referenceContainer name="product.info.main">
-            <block class="Magento\Catalog\View\Element\Template"
-                   name="product.info.demo"
-                   template="AlexYe_Catalog::product/view/demo.phtml"/>
+        <block class="Magento\Framework\View\Element\Template"
+               name="product.info.demo"
+               before="product.info.details"
+               template="AlexYe_Catalog::product/view/demo.phtml"
+        />
         </referenceContainer>
-
     </body>
 </page>
