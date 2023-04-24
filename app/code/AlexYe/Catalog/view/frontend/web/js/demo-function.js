@@ -5,8 +5,14 @@ define(
     function ($) {
         'use strict';
         $.widget('alexYe.catalog_demoFunction',{
+            option:{
+                text: 'Default text'
+            },
             _create: function () {
-                var tag = $('<p></p>').html('Some message')
+                this.append();
+            },
+            append: function (){
+                var tag = $('<p></p>').html(this.option.text)
                 $(this.element).append(tag)
             }
         });
