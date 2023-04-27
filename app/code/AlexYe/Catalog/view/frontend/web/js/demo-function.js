@@ -1,18 +1,19 @@
 define(
     [
         'jquery',
+        'jquery/ui'
     ],
     function ($) {
         'use strict';
         $.widget('alexYe.catalog_demoFunction',{
-            option:{
+            options:{
                 text: 'Default text'
             },
             _create: function () {
                 this.append();
             },
             append: function (){
-                var tag = $('<p></p>').html(this.option.text)
+                var tag = $('<p></p>').html(this.options.text)
                 $(this.element).append(tag)
             }
         });
