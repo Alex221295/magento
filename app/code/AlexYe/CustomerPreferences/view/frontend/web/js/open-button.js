@@ -31,7 +31,6 @@ define([
          * Open preferences sidebar
          */
         openPreferences: function () {
-            console.log(1);
             $(document).trigger('alexYe_CustomerPreferences_openPreferences');
 
             if (this.options.hideButton) {

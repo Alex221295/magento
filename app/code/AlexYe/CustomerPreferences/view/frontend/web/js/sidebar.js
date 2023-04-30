@@ -1,6 +1,6 @@
 define([
     'jquery',
-    // 'alexYe_customerPreferences_form'
+    'alexYe_customerPreferences_form'
 ], function ($) {
     'use strict';
 
@@ -53,6 +53,7 @@ define([
          * Open popup with the form to edit preferences
          */
         editPreferences: function () {
+            console.log($(this.options))
             $(this.options.form).data('mage-modal').openModal();
         }
     });
