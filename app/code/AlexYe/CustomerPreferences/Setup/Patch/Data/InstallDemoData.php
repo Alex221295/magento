@@ -1,6 +1,6 @@
 <?php
 
-namespace AlexYe\CustomerPreferences\Setup;
+namespace AlexYe\CustomerPreferences\Setup\Patch\Data;
 
 use Magento\Framework\Component\ComponentRegistrar;
 

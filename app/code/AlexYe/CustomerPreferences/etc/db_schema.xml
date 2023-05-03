@@ -10,7 +10,12 @@
         />
         <column xsi:type="smallint" name="attribute_id" padding="5" unsigned="true" nullable="false"
                 comment="Customer ID"
-        />
+        /><column xsi:type="smallint" name="website_id" padding="5" unsigned="true" nullable="false"
+                  comment="Website ID"
+    />
+        <column xsi:type="varchar" name="prefered_values" nullable="true" length="255"
+                comment="Preferred Value"
+                />
         <column xsi:type="smallint" name="demo" padding="5" unsigned="true" nullable="false"
                 comment="Demo Column"
         />
@@ -36,5 +41,20 @@
                     referenceColumn="attribute_id"
                     onDelete="CASCADE"
         />
+        <constraint xsi:type="foreign"
+                    referenceId="ALEX_YE_CSTR_PREFERENCES_WS_ID_STORE_WS_WS_ID"
+                    table="alex_ye_customer_preferences"
+                    column="website_id"
+                    referenceTable="store_website"
+                    referenceColumn="website_id"
+                    onDelete="CASCADE"
+        />
+        <constraint xsi:type="unique"
+                    referenceId="ALEX_YE_CSTR_PREFERENCES_CSTR_ID_ATTR_ID_WS_ID"
+        >
+            <column name="customer_id"/>
+            <column name="attribute_id"/>
+            <column name="website_id"/>
+        </constraint>
     </table>
 </schema>
