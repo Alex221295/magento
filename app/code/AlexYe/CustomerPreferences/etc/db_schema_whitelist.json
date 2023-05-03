@@ -5,13 +5,13 @@
             "customer_id": true,
             "attribute_id": true,
             "website_id": true,
-            "prefered_values": true,
+            "preferred_values": true,
             "created_at": true
         },
         "index": {
-            "ALEX_YE_CSTR_PREFERENCES_CUSTOMER_ID": true,
-            "ALEX_YE_CSTR_PREFERENCES_ATTRIBUTE_ID": true,
-            "ALEX_YE_CSTR_PREFERENCES_WEBSITE_ID": true
+            "ALEX_YE_CUSTOMER_PREFERENCES_CUSTOMER_ID": true,
+            "ALEX_YE_CUSTOMER_PREFERENCES_ATTRIBUTE_ID": true,
+            "ALEX_YE_CUSTOMER_PREFERENCES_WEBSITE_ID": true
         },
         "constraint": {
             "PRIMARY": true,
