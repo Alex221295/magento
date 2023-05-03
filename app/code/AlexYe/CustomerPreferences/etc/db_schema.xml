@@ -10,14 +10,12 @@
         />
         <column xsi:type="smallint" name="attribute_id" padding="5" unsigned="true" nullable="false"
                 comment="Customer ID"
-        /><column xsi:type="smallint" name="website_id" padding="5" unsigned="true" nullable="false"
-                  comment="Website ID"
-    />
+        />
+        <column xsi:type="smallint" name="website_id" padding="5" unsigned="true" nullable="false"
+                comment="Website ID"
+        />
         <column xsi:type="varchar" name="prefered_values" nullable="true" length="255"
                 comment="Preferred Value"
-                />
-        <column xsi:type="smallint" name="demo" padding="5" unsigned="true" nullable="false"
-                comment="Demo Column"
         />
         <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
                 comment="Creation Time"
@@ -25,6 +23,15 @@
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="preference_id"/>
         </constraint>
+        <index referenceId="ALEX_YE_CSTR_PREFERENCES_CUSTOMER_ID" indexType="btree">
+            <column name="customer_id"/>
+        </index>
+        <index referenceId="ALEX_YE_CSTR_PREFERENCES_ATTRIBUTE_ID" indexType="btree">
+            <column name="attribute_id"/>
+        </index>
+        <index referenceId="ALEX_YE_CSTR_PREFERENCES_WEBSITE_ID" indexType="btree">
+            <column name="website_id"/>
+        </index>
         <constraint xsi:type="foreign"
                     referenceId="ALEX_YE_CSTR_PREFERENCES_ATTR_ID_EAV_ATTR_ATTR_ID"
                     table="alex_ye_customer_preferences"
