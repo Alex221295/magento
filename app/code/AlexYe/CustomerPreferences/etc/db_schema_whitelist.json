@@ -1,0 +1,20 @@
+{
+    "alex_ye_customer_preferences": {
+        "column": {
+            "preference_id": true,
+            "customer_id": true,
+            "attribute_id": true,
+            "demo": true,
+            "created_at": true
+        },
+        "index": {
+            "ALEX_YE_CSTR_PREFERENCES_CSTR_ID_CSTR_ENTT_ENTT_ID": true,
+            "ALEX_YE_CSTR_PREFERENCES_ATTR_ID_EAV_ATTR_ATTR_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "ALEX_YE_CSTR_PREFERENCES_ATTR_ID_EAV_ATTR_ATTR_ID": true,
+            "ALEX_YE_CSTR_PREFERENCES_CSTR_ID_CSTR_ENTT_ENTT_ID": true
+        }
+    }
+}
