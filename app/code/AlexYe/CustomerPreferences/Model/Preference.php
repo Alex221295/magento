@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace AlexYe\CustomerPreferences\Model;
 
-
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Exception\LocalizedException;
 
@@ -106,15 +105,4 @@ class Preference extends \Magento\Framework\Model\AbstractModel
             throw new LocalizedException(__('Attribute with ID %s is not a product attribute.'));
         }
     }
-
-    /**
-     * @return mixed|string
-     * @throws LocalizedException
-     */
-    public function getAttributeCode(): ?string
-    {
-        $attribute = $this->eavConfig->getAttribute(Product::ENTITY, $this->getAttributeId());
-        return $attribute->getAttributeCode();
-    }
 }
-
