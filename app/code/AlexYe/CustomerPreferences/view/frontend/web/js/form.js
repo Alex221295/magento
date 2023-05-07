@@ -65,6 +65,7 @@ define([
                     $('body').trigger('processStart');
                 },
 
+                // @TODO: in case or connection or server-side error - show mailto link
                 /** @inheritdoc */
                 success: function (response) {
                     $('body').trigger('processStop');

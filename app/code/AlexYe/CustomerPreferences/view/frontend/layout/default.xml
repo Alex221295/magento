@@ -9,7 +9,7 @@
                        name="alexYe.customerPreferences.button"
                        template="AlexYe_CustomerPreferences::open_button.phtml"
                 />
-                <block class="Magento\Framework\View\Element\Template"
+                <block class="AlexYe\CustomerPreferences\Block\Form"
                        name="alexYe.customerPreferences.customerPreferences"
                        template="AlexYe_CustomerPreferences::sidebar.phtml"
                 />
