@@ -39,6 +39,14 @@ services:
     volumes:
       - '../../:/var/www/html'
       - './apache/virtual-host-unsecure.conf:/etc/apache2/sites-enabled/000-default.conf:ro'
+    links:
+      - redis
+  redis:
+    image: redis:latest
+    network_mode: bridge
+    labels:
+      - traefik.enable=false
+    restart: always
   mysql:
     image: 'bitnami/mariadb:10.4'
     restart: always
