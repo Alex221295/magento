@@ -39,4 +39,19 @@ class Form extends \Magento\Framework\View\Element\Template
 
         return $attributeCollection;
     }
+
+    protected function _construct(): void
+    {
+        parent::_construct();
+
+        $this->addData(
+            [
+                'cache_lifetime' => 86400,
+                'cache_tags' => [
+                    \Magento\Catalog\Model\Product::CACHE_TAG,
+                    \Magento\Eav\Model\Cache\Type::CACHE_TAG
+                ]
+            ]
+        );
+    }
 }
