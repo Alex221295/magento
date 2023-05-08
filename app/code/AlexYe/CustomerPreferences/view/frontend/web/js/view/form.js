@@ -12,15 +12,10 @@ define([
             template: 'AlexYe_CustomerPreferences/form'
         },
 
-        inputValue: ko.observable(),
+        attributes: {},
 
-        initObservable: function () {
-            this._super();
-            this.inputValue.subscribe(function (newValue) {
-                console.log(newValue);
-            });
-
-            return this;
+        savePreferences: function () {
+            console.log(this.attributes);
         }
     });
 
