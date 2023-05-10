@@ -53,7 +53,6 @@ define([
          * Open popup with the form to edit preferences
          */
         editPreferences: function () {
-            console.log($(this.options))
             $(this.options.form).data('mage-modal').openModal();
         }
     });

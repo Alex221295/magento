@@ -148,7 +148,7 @@ class Save extends \Magento\Framework\App\Action\Action implements
             $message = $e->getMessage();
         } catch (\Exception $e) {
             $this->logger->critical($e);
-            $message = __('Your preferences can\'t be saved. Please, contact us if you see this message.');
+            $message = __('Your preferences can\'t be saved. Please, contact us if ypu see this message.');
         }
 
         /** @var JsonResult $response */

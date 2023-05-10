@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace AlexYe\CustomerPreferences\Setup\Patch\Schema;
 
@@ -47,6 +48,3 @@ class RemoveDemoColumn implements \Magento\Framework\Setup\Patch\SchemaPatchInte
         return [];
     }
 }
-
-
-

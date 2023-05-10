@@ -7,23 +7,19 @@ define([
     'Magento_Ui/js/modal/modal'
 ], function ($, ko, Component, customerData, alert) {
     'use strict';
+
     return Component.extend({
         defaults: {
             template: 'AlexYe_CustomerPreferences/form'
         },
+        attributes: {},
 
-        inputValue: ko.observable(),
-
-        initObservable: function () {
-            this._super();
-            this.inputValue.subscribe(function (newValue) {
-                console.log(newValue);
-            });
-
-            return this;
+        savePreferences: function () {
+            console.log(this.attributes);
         }
     });
 
+    // Start rewriting form into the Knockout component
     $.widget('alexYeCustomerPreferences.form', {
         options: {
             action: ''
@@ -43,8 +39,7 @@ define([
             customerData.get('customer-preferences').subscribe(function (value) {
                 console.log(value);
             });
-            },
-
+        },
 
         _destroy: function () {
             this.modal.closeModal();

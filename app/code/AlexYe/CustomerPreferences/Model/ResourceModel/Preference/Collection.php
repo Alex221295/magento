@@ -1,7 +1,7 @@
 <?php
+declare(strict_types=1);
 
 namespace AlexYe\CustomerPreferences\Model\ResourceModel\Preference;
-
 
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
