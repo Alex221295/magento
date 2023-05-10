@@ -10,9 +10,20 @@ define([
 
     return Component.extend({
         defaults: {
-            template: 'AlexYe_CustomerPreferences/form'
+            template: 'alexYe_CustomerPreferences/form',
+
         },
         attributes: {},
+
+        /** @inheritdoc */
+        initialize: function () {
+            this._super();
+
+            $(document).on(
+                'alexYe_CustomerPreferences_editPreferences.alexYe_customerPreferences',
+                $.proxy(this.openModal, this)
+            );
+        },
 
         /**
          * Watch customer data change and update input values
@@ -39,10 +50,17 @@ define([
         /**
          * Init modal from the component HTML
          */
-        initModal: function () {
-            this.modal = $('#alex-ye-customer-preferences-form').modal({
+        initModal: function (formElement) {
+            this.modal = $(formElement).modal({
                 buttons: []
             });
+        },
+
+        /**
+         * Open modal form with preferences for editing
+         */
+        openModal: function () {
+            this.modal.modal('openModal');
         },
 
         /**

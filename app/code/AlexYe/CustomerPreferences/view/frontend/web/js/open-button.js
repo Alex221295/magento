@@ -15,16 +15,23 @@ define([
          */
         _create: function () {
             $(this.element).on('click.alexYe_customerPreferences', $.proxy(this.openPreferences, this));
-            $(this.element).on('alexYe_CustomerPreferences_closePreferences.alexYe_customerPreferences', $.proxy(this.closePreferences, this));
+
+            // generate unique hash to bind/unbind events only for this widget instance
+            this.hash = Math.random().toString(36).substr(2, 9);
+            $(document).on(
+                'alexYe_CustomerPreferences_closePreferences.' + this.hash,
+                $.proxy(this.closePreferences, this)
+            );
         },
 
         /**
-         * jQuery(jQuery('.alex-ye-customer-preferences-open-button').get(0)).data('alexYeCustomerPreferencesOpenButton').destroy()
          * @private
          */
         _destroy: function () {
             $(this.element).off('click.alexYe_customerPreferences');
-            $(this.element).off('alexYe_CustomerPreferences_closePreferences.alexYe_customerPreferences');
+            $(this.element).off(
+                'alexYe_CustomerPreferences_closePreferences.' + this.hash
+            );
         },
 
         /**
