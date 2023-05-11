@@ -10,8 +10,7 @@ define([
 
     return Component.extend({
         defaults: {
-            template: 'alexYe_CustomerPreferences/form',
-
+            template: 'AlexYe_CustomerPreferences/form'
         },
         attributes: {},
 
