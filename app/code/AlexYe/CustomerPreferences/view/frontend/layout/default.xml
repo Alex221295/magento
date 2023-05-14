@@ -43,7 +43,7 @@
                                         <item name="template" xsi:type="string">AlexYe_CustomerPreferences/form</item>
                                         <item name="action"
                                               xsi:type="url"
-                                              path="alex_Ye_customer_preferences/preferences/save"
+                                              path="alex_ye_customer_preferences/preferences/save"
                                         />
                                         <item name="attributes"
                                               xsi:type="options"
