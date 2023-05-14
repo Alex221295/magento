@@ -8,10 +8,12 @@
                 <block class="Magento\Framework\View\Element\Template"
                        name="alexYe.customerPreferences.button"
                        template="AlexYe_CustomerPreferences::open_button.phtml"
+                       ifconfig="alexye_customer_preferences/general/enabled"
                 />
                 <block class="Magento\Framework\View\Element\Template"
                        name="alexYe.customerPreferences.customerPreferences"
                        template="AlexYe_CustomerPreferences::sidebar.phtml"
+                       ifconfig="alexYe_customer_preferences/general/enabled"
                 >
                     <arguments>
                         <argument name="jsLayout" xsi:type="array">
@@ -29,6 +31,7 @@
                 <block class="Magento\Framework\View\Element\Template"
                        name="alexYe.customerPreferences.form"
                        template="AlexYe_CustomerPreferences::form.phtml"
+                       ifconfig="alexye_customer_preferences/general/enabled"
                 >
                     <arguments>
                         <argument name="cache_tags" xsi:type="array">
