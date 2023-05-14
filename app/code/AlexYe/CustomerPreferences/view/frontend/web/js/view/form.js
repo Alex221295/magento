@@ -3,16 +3,22 @@ define([
     'ko',
     'uiComponent',
     'Magento_Customer/js/customer-data',
-    'Magento_Ui/js/modal/alert',
+    'AlexYe_CustomerPreferences/js/model/customer-preferences',
+    'AlexYe_CustomerPreferences/js/action/save-preferences',
     'Magento_Ui/js/modal/modal'
-], function ($, ko, Component, customerData, alert) {
+], function ($, ko, Component, customerData, customerPreferencesModel, savePreferences) {
     'use strict';
 
     return Component.extend({
         defaults: {
-            template: 'AlexYe_CustomerPreferences/form'
+            template: 'AlexYe_CustomerPreferences/form',
+            customerPreferences: customerData.get('customer-preferences'),
+            action: '',
+            attributes: [],
+            listens: {
+                customerPreferences: 'updateCustomerPreferences'
+            }
         },
-        attributes: {},
 
         /** @inheritdoc */
         initialize: function () {
@@ -22,28 +28,26 @@ define([
                 'alexYe_CustomerPreferences_editPreferences.alexYe_customerPreferences',
                 $.proxy(this.openModal, this)
             );
+
+            // value must be observable - otherwise the list will not be rendered when customerData is updated
+            this.attributes.forEach(function (attributeData) {
+                attributeData.value = ko.observable('');
+            });
+
+            this.updateCustomerPreferences(this.customerPreferences());
         },
 
         /**
-         * Watch customer data change and update input values
+         * Populate customer preferences with data from the localStorage
          */
-        initObservable: function () {
-            var customerPreferences = customerData.get('customer-preferences')();
-
-            this._super();
-
-            // @TODO: JS may break if new attributes are added
+        updateCustomerPreferences: function (newCustomerPreferences) {
             this.attributes.forEach(function (attributeData) {
-                attributeData.value = customerPreferences[attributeData['attribute_code']];
+                if (newCustomerPreferences[attributeData['attribute_code']] !== undefined) {
+                    attributeData.value(newCustomerPreferences[attributeData['attribute_code']]);
+                }
             });
 
-            customerData.get('customer-preferences').subscribe(function (newCustomerPreferences) {
-                this.attributes.forEach(function (attributeData) {
-                    attributeData.value = newCustomerPreferences[attributeData['attribute_code']];
-                });
-            }.bind(this));
-
-            return this;
+            customerPreferencesModel.preferences(this.attributes);
         },
 
         /**
@@ -72,44 +76,10 @@ define([
                 isAjax: 1
             };
 
-            $.ajax({
-                url: this.action,
-                data: payload,
-                type: 'post',
-                dataType: 'json',
-                context: this,
-
-                /** @inheritdoc */
-                beforeSend: function () {
-                    $('body').trigger('processStart');
-                },
-
-                // @TODO: in case or connection or server-side error - show mailto link
-                /** @inheritdoc */
-                success: function (response) {
-                    $('body').trigger('processStop');
-                    alert({
-                        title: $.mage.__('Success'),
-                        content: response.message
-                    });
-                },
-
-                /** @inheritdoc */
-                error: function () {
-                    $('body').trigger('processStop');
-                    alert({
-                        title: $.mage.__('Error'),
-                        content: $.mage.__(
-                            'Your preferences can\'t be saved. Please, contact us if ypu see this message.'
-                        )
-                    });
-                },
-
-                /** @inheritdoc */
-                complete: function () {
+            savePreferences(payload, this.action)
+                .done(function () {
                     this.modal.modal('closeModal');
-                }
-            });
+                }.bind(this));
         }
     });
 });

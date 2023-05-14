@@ -139,7 +139,7 @@ class Save extends \Magento\Framework\App\Action\Action implements
             } else {
                 $preferencesByAttributeCode = array_merge(
                     $this->customerSession->getData('customer_preferences') ?? [],
-                        $this->getPreferencesFromRequest()
+                    $this->getPreferencesFromRequest()
                 );
                 $this->customerSession->setCustomerPreferences($preferencesByAttributeCode);
                 $message = __('Your preferences have been updated. Please, log in to save them permanently.');

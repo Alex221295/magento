@@ -5,5 +5,5 @@ var config = {
             alexYe_customerPreferences_sidebar: 'AlexYe_CustomerPreferences/js/view/sidebar',
             alexYe_customerPreferences_form: 'AlexYe_CustomerPreferences/js/view/form'
         }
-    },
+    }
 };

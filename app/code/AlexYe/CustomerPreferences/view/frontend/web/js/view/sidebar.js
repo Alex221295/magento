@@ -1,8 +1,11 @@
 define([
     'jquery',
     'ko',
-    'uiComponent'
-], function ($, ko, Component) {
+    'uiComponent',
+    'AlexYe_CustomerPreferences/js/model/customer-preferences',
+    // Guarantee that the form is initialized and labels are present in the model
+    'alexYe_customerPreferences_form'
+], function ($, ko, Component, customerPreferencesModel) {
     'use strict';
 
     return Component.extend({
@@ -10,6 +13,7 @@ define([
             template: 'AlexYe_CustomerPreferences/sidebar'
         },
 
+        customerPreferences: customerPreferencesModel.preferences,
         sidebarClass: ko.observable(''),
 
         /** @inheritdoc */
