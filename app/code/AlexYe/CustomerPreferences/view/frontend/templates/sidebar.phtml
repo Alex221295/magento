@@ -1,18 +1,10 @@
 <?php /** @var \Magento\Framework\View\Element\Template $block */ ?>
-<div data-bind="scope: 'customerPreferencesSidebar'">
-    <!-- ko template: getTemplate() --><!-- /ko -->
-</div>
-
-<script type="text/x-magento-init">
-    {
-        "*": {
-            "Magento_Ui/js/core/app": {
-                "components": {
-                    "customerPreferencesSidebar": {
-                        "component": "alexYe_customerPreferences_sidebar"
-                    }
-                }
+<div id="alex-ye-customer-preferences-sidebar-container" data-bind="scope: 'customerPreferencesSidebar'">
+    <script type="text/x-magento-init">
+        {
+            "#alex-ye-customer-preferences-sidebar-container": {
+                "Magento_Ui/js/core/app": <?= /* @noEscape */ $block->getJsLayout() ?>
             }
         }
-    }
-</script>
+    </script>
+</div>
