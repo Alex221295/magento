@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="AlexYe_CustomerPreferences::preferences"
+             title="Alex Ye"
+             module="AlexYe_CustomerPreferences"
+             sortOrder="50"
+             parent="Magento_Customer::customer"
+             resource="AlexYe_CustomerPreferences::listing"
+        />
+        <add id="AlexYe_CustomerPreferences::listing"
+             title="Customer Preferences"
+             translate="title"
+             module="AlexYe_CustomerPreferences"
+             sortOrder="10"
+             parent="AlexYe_CustomerPreferences::preferences"
+             action="alexye_customer_preferences/preferences/index"
+             resource="AlexYe_CustomerPreferences::listing"
+        />
+    </menu>
+</config>
