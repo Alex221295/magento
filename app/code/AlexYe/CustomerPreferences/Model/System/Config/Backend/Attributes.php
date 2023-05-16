@@ -1,99 +1,225 @@
 <?php
-
 declare(strict_types=1);
 
-namespace AlexYe\CustomerPreferences\Model\System\Config\Backend;
+namespace AlexYe\CustomerPreferences\Controller\Preferences;
 
-use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
-use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection as AttributeCollection;
-use Magento\Framework\App\ObjectManager;
-use Magento\Framework\Serialize\Serializer\Json;
+use AlexYe\CustomerPreferences\Model\Preference;
+use AlexYe\CustomerPreferences\Model\ResourceModel\Preference\Collection as PreferenceCollection;
+use Magento\Framework\Controller\Result\Json as JsonResult;
+use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\DataObjectFactory;
+use Magento\Framework\DB\Transaction;
+use Magento\Framework\Exception\LocalizedException;
 
-class Attributes extends \Magento\Config\Model\Config\Backend\Serialized\ArraySerialized
+class Save extends \Magento\Framework\App\Action\Action implements
+    \Magento\Framework\App\Action\HttpPostActionInterface
 {
-    /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory
-     */
-    private $attributeCollectionFactory;
+    public const XML_PATH_ENABLED = 'alexye_customer_preferences/general/enabled';
+
+    public const XML_PATH_ALLOW_FOR_GUESTS = 'alexye_customer_preferences/general/allow_for_guests';
 
     /**
-     * @var Json|null
+     * @var \Magento\Customer\Model\Session $customerSession
      */
-    private $serializer;
+    private $customerSession;
 
     /**
-     * Attributes constructor.
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
-     * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
-     * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollectionFactory
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
-     * @param array $data
-     * @param Json|null $serializer
+     * @var \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator
+     */
+    private $formKeyValidator;
+
+    /**
+     * @var \AlexYe\CustomerPreferences\Model\PreferenceFactory $preferenceFactory
+     */
+    private $preferenceFactory;
+
+    /**
+     * @var \AlexYe\CustomerPreferences\Model\ResourceModel\Preference\CollectionFactory $preferenceCollectionFactory
+     */
+    private $preferenceCollectionFactory;
+
+    /**
+     * @var \Magento\Framework\DB\TransactionFactory $transactionFactory
+     */
+    private $transactionFactory;
+
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface $storeManager
+     */
+    private $storeManager;
+
+    /**
+     * @var \Psr\Log\LoggerInterface $logger
+     */
+    private $logger;
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigs
+     */
+    private $scopeConfig;
+
+    /**
+     * Save constructor.
+     *
+     * @param \Magento\Customer\Model\Session $customerSession
+     * @param \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator
+     * @param \AlexYe\CustomerPreferences\Model\PreferenceFactory $preferenceFactory
+     * @param \AlexYe\CustomerPreferences\Model\ResourceModel\Preference\CollectionFactory $preferenceCollectionFactory
+     * @param \Magento\Framework\DB\TransactionFactory $transactionFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Psr\Log\LoggerInterface $logger
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\App\Action\Context $context
      */
     public function __construct(
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\App\Config\ScopeConfigInterface $config,
-        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
-        \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollectionFactory,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        array $data = [],
-        Json $serializer = null
+        \Magento\Customer\Model\Session $customerSession,
+        \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
+        \AlexYe\CustomerPreferences\Model\PreferenceFactory $preferenceFactory,
+        \AlexYe\CustomerPreferences\Model\ResourceModel\Preference\CollectionFactory $preferenceCollectionFactory,
+        \Magento\Framework\DB\TransactionFactory $transactionFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Psr\Log\LoggerInterface $logger,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\App\Action\Context $context
     ) {
-        parent::__construct(
-            $context,
-            $registry,
-            $config,
-            $cacheTypeList,
-            $resource,
-            $resourceCollection,
-            $data,
-            $serializer
-        );
-        $this->attributeCollectionFactory = $attributeCollectionFactory;
+        parent::__construct($context);
+        $this->customerSession = $customerSession;
+        $this->formKeyValidator = $formKeyValidator;
+        $this->preferenceFactory = $preferenceFactory;
+        $this->preferenceCollectionFactory = $preferenceCollectionFactory;
+        $this->transactionFactory = $transactionFactory;
+        $this->storeManager = $storeManager;
+        $this->logger = $logger;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
      * @inheritDoc
      */
-    protected function _afterLoad(): void
+    public function execute()
     {
-        parent::_afterLoad();
-        /** @var array $values */
-        $values = $this->getValue() ?: [];
-
-        $customerAttributeOptionCodes = [];
-        /** @var AttributeCollection $attributeCollection */
-        $attributeCollection = $this->attributeCollectionFactory->create();
-        $attributeCollection->addIsFilterableFilter();
-        $attributeCollection->setFrontendInputTypeFilter(['in' => ['select', 'multiselect']]);
-
-        /** @var Attribute $attribute */
-        foreach ($attributeCollection as $attribute) {
-            $customerAttributeOptionCodes[$attribute->getAttributeCode()] = 1;
-        }
-
-        foreach ($values as $index => $value) {
-            // remove attribute from the list if it was deleted
-            if (!isset($customerAttributeOptionCodes[$value['attribute_code']])) {
-                unset($values[$index]);
+        // @TODO: merge with customer preferences on login or not? Maybe merge only if empty?
+        // Every fail should be controlled
+        try {
+            if (!$this->validateRequest()) {
+                throw new LocalizedException(__('Unable to save preferences.'));
             }
 
-            unset($customerAttributeOptionCodes[$value['attribute_code']]);
+            $websiteId = (int) $this->storeManager->getWebsite()->getId();
+
+            if ($this->customerSession->isLoggedIn()) {
+                $customerId = (int) $this->customerSession->getId();
+                $preferencesByAttributeCode = [];
+
+                /** @var PreferenceCollection $preferenceCollection */
+                $preferenceCollection = $this->preferenceCollectionFactory->create();
+                $preferenceCollection->addCustomerFilter($customerId)
+                    ->addWebsiteFilter($websiteId);
+
+                /** @var Preference $existingPreference */
+                foreach ($preferenceCollection as $existingPreference) {
+                    $preferencesByAttributeCode[$existingPreference->getAttributeCode()] = $existingPreference;
+                }
+
+                /** @var Transaction $saveTransaction */
+                $saveTransaction = $this->transactionFactory->create();
+                /** @var Transaction $deleteTransaction */
+                $deleteTransaction = $this->transactionFactory->create();
+
+                foreach ($this->getPreferencesFromRequest() as $attributeCode => $value) {
+                    if (isset($preferencesByAttributeCode[$attributeCode])) {
+                        $preference = $preferencesByAttributeCode[$attributeCode];
+
+                        if ($preference->getPreferredValues() !== $value) {
+                            if ($value) {
+                                $preference->setPreferredValues($value);
+                                $saveTransaction->addObject($preference);
+                            } else {
+                                $deleteTransaction->addObject($preference);
+                            }
+                        }
+                    } elseif ($value) {
+                        /** @var Preference $preference */
+                        $preference = $this->preferenceFactory->create();
+
+                        $preference->setCustomerId($customerId)
+                            ->setWebsiteId($websiteId)
+                            ->setAttributeId($attributeCode)
+                            ->setPreferredValues($value);
+                        $saveTransaction->addObject($preference);
+                    }
+                }
+
+                $saveTransaction->save();
+                $deleteTransaction->delete();
+                $message = __('Your preferences have been updated.');
+            } else {
+                $preferencesByAttributeCode = array_merge(
+                    $this->customerSession->getData('customer_preferences') ?? [],
+                    $this->getPreferencesFromRequest()
+                );
+
+                $preferencesByAttributeCode = array_filter($preferencesByAttributeCode, static function ($value) {
+                    return $value || $value === '0';
+                });
+
+                $this->customerSession->setCustomerPreferences($preferencesByAttributeCode);
+                $message = __('Your preferences have been updated. Please, log in to save them permanently.');
+            }
+        } catch (LocalizedException $e) {
+            $message = $e->getMessage();
+        } catch (\Exception $e) {
+            $this->logger->critical($e);
+            $message = __('Your preferences can\'t be saved. Please, contact us if you see this message.');
         }
 
-        // add new attributes to the list
-        foreach ($customerAttributeOptionCodes as $attributeCode => $enabled) {
-            $values[] = [
-                'attribute_code' => $attributeCode,
-                'enabled' => $enabled
-            ];
+        /** @var JsonResult $response */
+        $response = $this->resultFactory->create(ResultFactory::TYPE_JSON);
+        $response->setData([
+            'message' => $message
+        ]);
+
+        return $response;
+    }
+
+    /**
+     * @return bool
+     */
+    private function validateRequest(): bool
+    {
+        $request = $this->getRequest();
+        $allowSavingPreferences = true;
+
+        if (!$this->formKeyValidator->validate($request)) {
+            // This message is translated in the module Magento_Checkout
+            $allowSavingPreferences = false;
         }
 
-        $this->setValue($values);
+        if (!$this->scopeConfig->getValue(self::XML_PATH_ENABLED)
+            || (!$this->customerSession->isLoggedIn() && !$this->scopeConfig->getValue(self::XML_PATH_ALLOW_FOR_GUESTS))
+        ) {
+            $allowSavingPreferences = false;
+        }
+
+        $eventParameters = [
+            'allow_saving_preferences' => $allowSavingPreferences
+        ];
+        $this->_eventManager->dispatch('alexye_customer_preferences_allow_save', $eventParameters);
+
+        return $allowSavingPreferences;
+    }
+
+    /**
+     * @return array
+     */
+    private function getPreferencesFromRequest(): array
+    {
+        $preferencesByAttributeCode = [];
+
+        foreach ($this->getRequest()->getParam('attributes') as $data) {
+            $preferencesByAttributeCode[$data['attribute_code']] = trim($data['value']) ?? '';
+        }
+
+        return $preferencesByAttributeCode;
     }
 }
