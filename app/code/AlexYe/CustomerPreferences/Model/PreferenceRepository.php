@@ -5,10 +5,17 @@ declare(strict_types=1);
 namespace AlexYe\CustomerPreferences\Model;
 
 use AlexYe\CustomerPreferences\Api\Data\PreferenceSearchResultInterface;
+use AlexYe\CustomerPreferences\Api\Data\PreferenceInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Exception\CouldNotSaveException;
 
 class PreferenceRepository implements \AlexYe\CustomerPreferences\Api\PreferenceRepositoryInterface
 {
+    /**
+     * @var \Magento\Framework\EntityManager\EntityManager $entityManager
+     */
+    private $entityManager;
+
     /**
      * @var \AlexYe\CustomerPreferences\Model\ResourceModel\Preference\CollectionFactory $preferencesCollectionFactory
      */
@@ -31,17 +38,20 @@ class PreferenceRepository implements \AlexYe\CustomerPreferences\Api\Preference
 
     /**
      * PreferenceRepository constructor.
+     * @param \Magento\Framework\EntityManager\EntityManager $entityManager
      * @param \AlexYe\CustomerPreferences\Model\ResourceModel\Preference\CollectionFactory $preferencesCollectionFactory
      * @param \AlexYe\CustomerPreferences\Api\Data\PreferenceSearchResultInterfaceFactory $searchResultsFactory
      * @param \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor
      * @param \AlexYe\CustomerPreferences\Api\Data\PreferenceInterfaceFactory $preferenceDataFactory
      */
     public function __construct(
+        \Magento\Framework\EntityManager\EntityManager $entityManager,
         \AlexYe\CustomerPreferences\Model\ResourceModel\Preference\CollectionFactory $preferencesCollectionFactory,
         \AlexYe\CustomerPreferences\Api\Data\PreferenceSearchResultInterfaceFactory $searchResultsFactory,
         \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor,
         \AlexYe\CustomerPreferences\Api\Data\PreferenceInterfaceFactory $preferenceDataFactory
     ) {
+        $this->entityManager = $entityManager;
         $this->collectionProcessor = $collectionProcessor;
         $this->preferencesCollectionFactory = $preferencesCollectionFactory;
         $this->searchResultsFactory = $searchResultsFactory;
@@ -49,8 +59,32 @@ class PreferenceRepository implements \AlexYe\CustomerPreferences\Api\Preference
     }
 
     /**
-     * @param SearchCriteriaInterface $searchCriteria
-     * @return PreferenceSearchResultInterface
+     * @inheritDoc
+     * @throws CouldNotSaveException
+     */
+    public function save(PreferenceInterface $preference): PreferenceInterface
+    {
+        try {
+            $this->entityManager->save($preference);
+        } catch (\Exception $exception) {
+            throw new CouldNotSaveException(__($exception->getMessage()));
+        }
+
+        return $preference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function get(int $preferenceId): PreferenceInterface
+    {
+        $customer = $this->preferenceDataFactory->create();
+
+        return $this->entityManager->load($customer, $preferenceId);
+    }
+
+    /**
+     * @inheritdoc
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getList(SearchCriteriaInterface $searchCriteria): PreferenceSearchResultInterface
@@ -73,5 +107,27 @@ class PreferenceRepository implements \AlexYe\CustomerPreferences\Api\Preference
         $searchResults->setItems($preferences);
 
         return $searchResults;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function delete(PreferenceInterface $preference): bool
+    {
+        try {
+            $this->entityManager->delete($preference);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function deleteById(int $preferenceId): bool
+    {
+        return $this->delete($this->get($preferenceId));
     }
 }
