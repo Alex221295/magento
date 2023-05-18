@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="standard">
+        <route id="alex_ye_email_demo" frontName="email-demo">
+            <module name="AlexYe_EmailDemo" />
+        </route>
+    </router>
+</config>
